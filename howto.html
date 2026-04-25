@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Pages で無料サイトを公開する手順書</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f1a;
+    --surface: #1a1a2e;
+    --border: #2a2a4a;
+    --green: #00ff88;
+    --yellow: #ffd60a;
+    --pink: #ff6b9d;
+    --blue: #4ecdc4;
+    --red: #ff4757;
+    --text: #e8e8f0;
+    --muted: #888899;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  /* グリッド背景 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ヘッダー */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--green);
+    padding: 2rem;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 40px rgba(0,255,136,0.08);
+  }
+
+  .header-inner {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .label-tag {
+    font-family: 'DotGothic16', monospace;
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+  }
+
+  h1 span { color: var(--green); }
+
+  .meta {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .meta span { display: flex; align-items: center; gap: 6px; }
+
+  /* コンテンツ */
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 概要ボックス */
+  .summary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2.5rem;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .summary p { color: var(--muted); font-size: 14px; }
+  .summary strong { color: var(--green); }
+
+  /* ステップ */
+  .step {
+    margin-bottom: 2rem;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step:nth-child(1) { animation-delay: 0.05s; }
+  .step:nth-child(2) { animation-delay: 0.1s; }
+  .step:nth-child(3) { animation-delay: 0.15s; }
+  .step:nth-child(4) { animation-delay: 0.2s; }
+  .step:nth-child(5) { animation-delay: 0.25s; }
+  .step:nth-child(6) { animation-delay: 0.3s; }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .step-num {
+    font-family: 'DotGothic16', monospace;
+    font-size: 11px;
+    background: var(--green);
+    color: var(--bg);
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  .step-num.warn { background: var(--yellow); }
+  .step-num.done { background: var(--blue); }
+
+  h2 {
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: var(--text);
+  }
+
+  .step-body { padding-left: 0; }
+
+  p { margin-bottom: 0.75rem; color: var(--text); }
+
+  /* コードブロック */
+  .code-block {
+    background: #0a0a14;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin: 0.75rem 0;
+    font-family: 'DotGothic16', monospace;
+    font-size: 13px;
+    overflow-x: auto;
+    position: relative;
+  }
+
+  .code-block .prompt { color: var(--green); user-select: none; }
+  .code-block .cmd { color: var(--yellow); }
+  .code-block .comment { color: var(--muted); }
+  .code-block .output { color: var(--muted); font-size: 12px; }
+
+  /* 注意・Tips */
+  .alert {
+    border-radius: 4px;
+    padding: 0.875rem 1rem;
+    margin: 0.75rem 0;
+    font-size: 13.5px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .alert-icon { flex-shrink: 0; font-size: 16px; margin-top: 1px; }
+
+  .alert.trap {
+    background: rgba(255,71,87,0.1);
+    border: 1px solid rgba(255,71,87,0.3);
+    color: #ffaaaa;
+  }
+
+  .alert.tip {
+    background: rgba(0,255,136,0.07);
+    border: 1px solid rgba(0,255,136,0.2);
+    color: #aaffcc;
+  }
+
+  .alert.info {
+    background: rgba(78,205,196,0.08);
+    border: 1px solid rgba(78,205,196,0.25);
+    color: #aaeee8;
+  }
+
+  /* チェックリスト */
+  .checklist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0.75rem 0;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    padding: 6px 10px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 4px;
+  }
+
+  .checklist li::before {
+    content: '□';
+    color: var(--green);
+    font-size: 16px;
+    flex-shrink: 0;
+    line-height: 1.4;
+  }
+
+  /* つまずきポイント */
+  .trap-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--red);
+    border-radius: 0 0 6px 6px;
+    padding: 1.25rem 1.5rem;
+    margin: 0.75rem 0;
+  }
+
+  .trap-title {
+    font-size: 12px;
+    font-family: 'DotGothic16', monospace;
+    color: var(--red);
+    letter-spacing: 2px;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+  }
+
+  .trap-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 0.6rem;
+    font-size: 13.5px;
+  }
+
+  .trap-item::before {
+    content: '！';
+    color: var(--red);
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+
+  /* セクション区切り */
+  .section-label {
+    font-family: 'DotGothic16', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 2.5rem 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* 完成ボックス */
+  .finish {
+    background: var(--surface);
+    border: 1px solid var(--green);
+    border-radius: 6px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0,255,136,0.06);
+    margin-top: 2rem;
+  }
+
+  .finish .url {
+    font-family: 'DotGothic16', monospace;
+    font-size: 1.1rem;
+    color: var(--green);
+    margin: 0.5rem 0;
+    word-break: break-all;
+  }
+
+  .finish p { color: var(--muted); font-size: 13px; margin: 0; }
+
+  code {
+    font-family: 'DotGothic16', monospace;
+    background: rgba(255,255,255,0.07);
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 13px;
+    color: var(--yellow);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="label-tag">▶ GUIDE v1.0 — 2026.04.26</div>
+    <h1>GitHub Pages で<span>無料サイト</span>を<br>公開するまでの完全手順</h1>
+    <div class="meta">
+      <span>⏱ 所要時間：30〜60分</span>
+      <span>💰 費用：¥0</span>
+      <span>🧩 難易度：初心者向け（ハマりポイント付き）</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="summary">
+    <p>この手順書は<strong>実際につまずいた箇所も含めて</strong>記録した、リアルな体験ベースのガイドです。GitLabユーザーがGitHubを使う場合のUIの違いも補足しています。</p>
+  </div>
+
+  <div class="section-label">準備</div>
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="step-header">
+      <span class="step-num">STEP 01</span>
+      <h2>GitHubアカウントを作る・ログインする</h2>
+    </div>
+    <div class="step-body">
+      <p>すでにアカウントがある場合はスキップしてOK。</p>
+      <ul class="checklist">
+        <li>https://github.com にアクセス</li>
+        <li>「Sign up」からアカウント作成（メールアドレスがあればOK）</li>
+        <li>ユーザー名はサイトのURLになるので慎重に決める</li>
+      </ul>
+      <div class="alert info">
+        <span class="alert-icon">ℹ</span>
+        <span>ユーザー名を <code>yudo-dev</code> にした場合、サイトのURLは <code>https://yudo-dev.github.io/</code> になります。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step">
+    <div class="step-header">
+      <span class="step-num">STEP 02</span>
+      <h2>リポジトリを作る（名前に注意！）</h2>
+    </div>
+    <div class="step-body">
+      <p>右上の「＋」→「New repository」をクリック。</p>
+      <ul class="checklist">
+        <li>Repository name に <code>ユーザー名.github.io</code> と入力（例：<code>yudo-dev.github.io</code>）</li>
+        <li>「Public」を選ぶ</li>
+        <li>「Create repository」をクリック</li>
+      </ul>
+      <div class="trap-section">
+        <div class="trap-title">⚠ つまずきポイント</div>
+        <div class="trap-item">リポジトリ名が <code>ユーザー名.github.io</code> と完全一致しないと、URLが <code>ユーザー名.github.io/リポジトリ名/</code> という二重URLになってしまう。後から Settings → General → Rename で変更可能。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">ファイルを作ってpushする</div>
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <div class="step-header">
+      <span class="step-num">STEP 03</span>
+      <h2>index.html を作る</h2>
+    </div>
+    <div class="step-body">
+      <p>ローカルの作業フォルダに <code>index.html</code> を1枚作る。これだけでサイトが成立する。</p>
+      <div class="code-block">
+        <div><span class="comment">&lt;!-- 最小構成のindex.html --&gt;</span></div>
+        <div><span class="cmd">&lt;!DOCTYPE html&gt;</span></div>
+        <div><span class="cmd">&lt;html lang="ja"&gt;</span></div>
+        <div><span class="cmd">&lt;head&gt;&lt;meta charset="UTF-8"&gt;&lt;title&gt;My Site&lt;/title&gt;&lt;/head&gt;</span></div>
+        <div><span class="cmd">&lt;body&gt;&lt;h1&gt;こんにちは！&lt;/h1&gt;&lt;/body&gt;</span></div>
+        <div><span class="cmd">&lt;/html&gt;</span></div>
+      </div>
+      <div class="alert tip">
+        <span class="alert-icon">✦</span>
+        <span>ファイル名は必ず <code>index.html</code>（小文字）にすること。大文字だと表示されない場合がある。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step">
+    <div class="step-header">
+      <span class="step-num">STEP 04</span>
+      <h2>GitHubにpushする</h2>
+    </div>
+    <div class="step-body">
+      <p>ターミナル（PowerShell可）を <code>index.html</code> があるフォルダで開いて実行。</p>
+      <div class="code-block">
+        <div><span class="prompt">$ </span><span class="cmd">git init</span></div>
+        <div><span class="prompt">$ </span><span class="cmd">git add index.html</span></div>
+        <div><span class="prompt">$ </span><span class="cmd">git commit -m "初回：index.html追加"</span></div>
+        <div><span class="prompt">$ </span><span class="cmd">git branch -m master main</span> <span class="comment"># ブランチ名をmainに統一</span></div>
+        <div><span class="prompt">$ </span><span class="cmd">git remote add origin https://github.com/ユーザー名/ユーザー名.github.io.git</span></div>
+        <div><span class="prompt">$ </span><span class="cmd">git push -u origin main --force</span></div>
+      </div>
+      <div class="trap-section">
+        <div class="trap-title">⚠ つまずきポイント</div>
+        <div class="trap-item">ターミナルを <code>index.html</code> があるフォルダとは別の場所で開いていると「nothing to commit」になる。<code>pwd</code> でどこにいるか確認してから実行する。</div>
+        <div class="trap-item"><code>error: remote origin already exists</code> が出た場合は <code>git remote -v</code> で確認し、必要なら <code>git remote set-url origin [URL]</code> で上書き。</div>
+        <div class="trap-item">pushしたのにGitHubのCodeタブにファイルが見えない場合は、ブランチ名がずれている可能性あり。<code>main</code> ブランチにpushできているか確認。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">GitHub Pages の設定</div>
+
+  <!-- STEP 5 -->
+  <div class="step">
+    <div class="step-header">
+      <span class="step-num">STEP 05</span>
+      <h2>GitHub Pages を有効にする</h2>
+    </div>
+    <div class="step-body">
+      <ul class="checklist">
+        <li>GitHubのリポジトリページを開く</li>
+        <li>上部タブの「Settings」をクリック</li>
+        <li>左サイドバーの「Pages」をクリック</li>
+        <li>Branch のドロップダウンを <code>main</code> に変更</li>
+        <li>フォルダは <code>/ (root)</code> のまま</li>
+        <li>「Save」をクリック</li>
+      </ul>
+      <div class="alert info">
+        <span class="alert-icon">ℹ</span>
+        <span>Saveを押した直後は「GitHub Pages is currently disabled」と表示されることがある。1〜2分待ってページをリロードすると「Your site is live at...」に変わる。</span>
+      </div>
+      <div class="trap-section">
+        <div class="trap-title">⚠ つまずきポイント</div>
+        <div class="trap-item">Branch のドロップダウンが選べない → リポジトリにファイルがまだpushされていない状態。STEP 04 を先に完了させる。</div>
+        <div class="trap-item">GitLabに慣れているとUIの場所が全然違うので迷いやすい。「Settings」は上部タブの右端にある。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step">
+    <div class="step-header">
+      <span class="step-num done">DONE</span>
+      <h2>サイトにアクセスして確認</h2>
+    </div>
+    <div class="step-body">
+      <p>1〜2分待ってからブラウザでアクセスする。</p>
+      <div class="code-block">
+        <div><span class="comment"># URLの形式</span></div>
+        <div><span class="cmd">https://ユーザー名.github.io/</span></div>
+      </div>
+      <div class="alert tip">
+        <span class="alert-icon">✦</span>
+        <span>URLが <code>ユーザー名.github.io/リポジトリ名/</code> になっている場合はリポジトリ名が間違っている。Settings → General → Repository name で <code>ユーザー名.github.io</code> に修正する。</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 完成 -->
+  <div class="finish">
+    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🎉</div>
+    <div style="font-weight: 900; font-size: 1.1rem; margin-bottom: 0.25rem;">公開完了！</div>
+    <div class="url">https://ユーザー名.github.io/</div>
+    <p>月額費用 ¥0 で世界中から見られるサイトの完成です。<br>次は中身をカスタマイズしよう。</p>
+  </div>
+
+  <div class="section-label">参考：ブランチ運用について</div>
+
+  <div class="step">
+    <div class="step-header">
+      <span class="step-num warn">TIPS</span>
+      <h2>個人サイトのブランチ戦略</h2>
+    </div>
+    <div class="step-body">
+      <p>趣味・個人サイトなら <code>main</code> 1本で運用するのが最もシンプルでおすすめ。</p>
+      <div class="code-block">
+        <div><span class="comment"># シンプル運用（おすすめ）</span></div>
+        <div><span class="cmd">main ──── 直接コミット → 即公開</span></div>
+        <div>&nbsp;</div>
+        <div><span class="comment"># リニューアル時だけブランチを切る</span></div>
+        <div><span class="cmd">main ────── 公開中のサイト</span></div>
+        <div><span class="cmd">  └── develop ── 作業中（完成したらmainにマージ）</span></div>
+      </div>
+      <div class="alert tip">
+        <span class="alert-icon">✦</span>
+        <span>最初からdevelopブランチを切ると毎回マージが必要になり、更新が億劫になりがち。「大幅に変えたい！」と思ったタイミングで切るのがちょうどいい。</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+</body>
+</html>
