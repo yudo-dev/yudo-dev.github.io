@@ -1,0 +1,18 @@
+---
+layout: default
+---
+<main>
+  <article class="post-article">
+
+    <span class="card-tag {{ page.tag_color | default: 'yellow' }}">{{ page.categories | first | default: 'きろく' }}</span>
+    <h1 class="post-title">{{ page.title }}</h1>
+    <div class="card-date">{{ page.date | date: "%Y.%m.%d" }}</div>
+
+    <div class="post-body">
+      {{ content }}
+    </div>
+
+    <a href="{{ '/' | relative_url }}" class="back-btn">← TOPに戻る</a>
+
+  </article>
+</main>

@@ -1,0 +1,7 @@
+title: MY WORLD
+description: 活動記録ブログ
+url: "https://yudo-dev.github.io"
+baseurl: ""
+
+plugins:
+  - jekyll-feed
